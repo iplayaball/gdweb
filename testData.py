@@ -47,15 +47,21 @@ for fdict in reversed(jsonRes):
     del fdict['Hashes']
 
   pdir = re.sub(r'/[^/]*$', '', path)
+  # 存在同名同路径的文件
+  # if path.startswith('//entertainment/top_film/__小影库-7-8分/M08/(7.9分)-无主之地(2001)'):
+  #   print('----'+path)
+  #   print('=---'+pdir)
   fdict['pdir'] = pdir
 
   if fdict['IsDir']:
     # 测试dirDict 找不到path key 的问题。同一个出问题的目录 2427 个文件时没有问题
     # print(dirDict.keys())
     # print('-----------')
-    if not dirDict.get(path):
+    ddata = dirDict.get(path)
+    if not ddata:
       # for k in dirDict.keys():
         # print(k)
+      # fdict['Path'] = path+'=1' # 同名的文件加上=1标识
       print('no '+path)
       # sys.exit()
       fdict['fsn'] = 0
@@ -68,7 +74,7 @@ for fdict in reversed(jsonRes):
       fdict['Size'] = size
       fdict['fsn'] = fsn
       fdict['dsn'] = dsn
-      dsn += 1
+    dsn += 1
     # print(f'{dsn}={fsn}={size}={path}')
   else:
     fsn = 1
@@ -98,13 +104,16 @@ if not dirDict:
                                 )
 else:
   print(dirDict)
-  # sys.exit()
+  sys.exit()
 
 #print(jsonRes[0])
 for fdict in jsonRes:
   pdir = fdict['pdir']
-  pobj = models.gdfiles.objects.get(Path=pdir)
-  fdict['pdir'] = pobj
+  pobj = models.gdfiles.objects.filter(Path=pdir).exclude(fsn=0)
+  if len(pobj) != 1:
+    print(pobj)
+    sys.exit()
+  fdict['pdir'] = pobj[0]
   gdf = models.gdfiles(**fdict)
   gdf.save()
 
