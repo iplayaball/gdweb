@@ -6,6 +6,7 @@ import subprocess
 import re
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # 定位到你的django根目录
+# print(os.pardir)
 sys.path.append(os.path.abspath(os.path.join(BASE_DIR, os.pardir)))
 # 行是必须的
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "web_files.settings")
@@ -15,18 +16,24 @@ from app1 import models
 models.gdfiles.objects.all().delete()
 
 #gdName = 't1:entertainment/chinaMovies'
-# gdName = 't1:entertainment/综艺'
-gdName = 't1:'
+gdName = 't1:entertainment/综艺'
+# gdName = 't1:'
 
-grepv = "|egrep -v '^,|gclone sa file: .*\.json'"
-lsjCmd = f"rclone lsjson -R --hash {gdName} {grepv}"
+if len(sys.argv) > 1:
+  argv = sys.argv[1:]
+  if argv[0] == 'jlf':
+    with open(f'{BASE_DIR}/testgd.json', 'r') as jsf:
+      jsonRes = json.load(jsf)
+  else:
+    print(f'only jlf ,no {argv}')
+    sys.exit()
+else:
+  grepv = "|egrep -v '^,|gclone sa file: .*\.json'"
+  lsjCmd = f"rclone lsjson -R --hash {gdName} {grepv}"
 
-lsjsr = subprocess.run(lsjCmd, stdout=subprocess.PIPE, shell=True)
-jsonRes = json.loads(lsjsr.stdout)
-
-# with open('testgd.json', 'r') as jsf:
-# 	jsonRes = json.load(jsf)
-
+  lsjsr = subprocess.run(lsjCmd, stdout=subprocess.PIPE, shell=True)
+  jsonRes = json.loads(lsjsr.stdout)
+   
 dirDict = {}
 # 统计目录内的文件数据
 for fdict in reversed(jsonRes):
@@ -67,7 +74,7 @@ for fdict in reversed(jsonRes):
     dirDict[pdir] = {'size': size}
     dirDict[pdir]['fsn'] = 1
     dirDict[pdir]['dsn'] = dsn
-
+    
   # print(fdict)
 rootdir = dirDict.pop('/')
 if not dirDict:
