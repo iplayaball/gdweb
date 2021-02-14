@@ -13,7 +13,7 @@ class gdfiles(models.Model):
   # gdid = models.CharField(max_length=50, null=True)
   md5 = models.CharField(max_length=50, null=True)
   pdir = models.ForeignKey("self", verbose_name=(
-      "父目录"), on_delete=models.CASCADE, null=True)
+      "父目录"), on_delete=models.CASCADE, null=True, db_constraint=False)
   fsn = models.IntegerField(default=0, verbose_name='文件数')
   dsn = models.IntegerField(default=0, verbose_name='目录数')
 

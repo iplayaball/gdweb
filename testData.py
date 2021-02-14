@@ -4,6 +4,7 @@ import django
 import json
 import subprocess
 import re
+import datetime
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # 定位到你的django根目录
 # print(os.pardir)
@@ -96,30 +97,45 @@ for fdict in reversed(jsonRes):
 rootdir = dirDict.pop('/')
 # print(rootdir)
 # sys.exit()
-if not dirDict:
-  models.gdfiles.objects.create(id='01', Path='/', Name='/',
-                                Size=rootdir['size'],
-                                IsDir=True,
-                                fsn=rootdir['fsn'],
-                                dsn=rootdir['dsn'],
-                                MimeType='gdname',
-                                )
-else:
+if dirDict:
   print(dirDict)
-  sys.exit()
+  # sys.exit()
+rootdir['id'] = '01'
+rootdir['Path'] = '/'
+rootdir['Name'] = '/'
+rootdir['IsDir'] = True
+rootdir['MimeType'] = 'gdname'
+rootdir['Size'] = rootdir.pop('size')
+models.gdfiles.objects.create(**rootdir)
+# models.gdfiles.objects.create(id='01', Path='/', Name='/',
+#                               Size=rootdir['size'],
+#                               IsDir=True,
+#                               fsn=rootdir['fsn'],
+#                               dsn=rootdir['dsn'],
+#                               MimeType='gdname',
+#                               )
 
-#print(jsonRes[0])
+pdiridDict = {rootdir['Path']: rootdir['id']}
+objList = []
 for fdict in jsonRes:
+  # pobj = models.gdfiles.objects.filter(Path=pdir).exclude(fsn=0)
+  pdiridDict[fdict['Path']] = fdict['id']
   pdir = fdict['pdir']
-  pobj = models.gdfiles.objects.filter(Path=pdir).exclude(fsn=0)
-  if len(pobj) != 1:
-    print(pobj)
-    sys.exit()
-  fdict['pdir_id'] = pobj[0].id
+  pid = pdiridDict.get(pdir)
+  if not pid:
+    print(fdict)
+    # sys.exit()
+  fdict['pdir_id'] = pid
   del fdict['pdir']
   # print(fdict)
   gdf = models.gdfiles(**fdict)
-  gdf.save()
+  objList.append(gdf)
+  # gdf.save()
 
+print('开始批量插入数据...')
+starttime = datetime.datetime.now()
+models.gdfiles.objects.bulk_create(objList)
+endtime = datetime.datetime.now()
+print((endtime - starttime))
 #res = models.gdfiles.objects.all()
 # print(res)
