@@ -74,7 +74,7 @@ for fdict in reversed(jsonRes):
       fdict['Size'] = size
       fdict['fsn'] = fsn
       fdict['dsn'] = dsn
-    print(f'{dsn}={fsn}={size}={path}')
+    # print(f'{dsn}={fsn}={size}={path}')
     dsn += 1
   else:
     fsn = 1
@@ -115,7 +115,9 @@ for fdict in jsonRes:
   if len(pobj) != 1:
     print(pobj)
     sys.exit()
-  fdict['pdir'] = pobj[0]
+  fdict['pdir_id'] = pobj[0].id
+  del fdict['pdir']
+  # print(fdict)
   gdf = models.gdfiles(**fdict)
   gdf.save()
 
