@@ -28,7 +28,8 @@ if len(sys.argv) > 1:
     print(f'only jlf ,no {argv}')
     sys.exit()
 else:
-  grepv = "|egrep -v '^,|gclone sa file: .*\.json'"
+  # grepv = "|egrep -v '^,|gclone sa file: .*\.json'"
+  grepv = "|sed 's/gclone sa file:.*\.json//'"
   lsjCmd = f"rclone lsjson -R --hash {gdName} {grepv}"
 
   lsjsr = subprocess.run(lsjCmd, stdout=subprocess.PIPE, shell=True)
@@ -49,15 +50,25 @@ for fdict in reversed(jsonRes):
   fdict['pdir'] = pdir
 
   if fdict['IsDir']:
-    # print(dirDict)
-    ddata = dirDict.pop(path)
-    size = ddata['size']
-    fsn = ddata['fsn']
-    dsn = ddata['dsn']
-    fdict['Size'] = size
-    fdict['fsn'] = fsn
-    fdict['dsn'] = dsn
-    dsn += 1
+    # 测试dirDict 找不到path key 的问题。同一个出问题的目录 2427 个文件时没有问题
+    # print(dirDict.keys())
+    # print('-----------')
+    if not dirDict.get(path):
+      # for k in dirDict.keys():
+        # print(k)
+      print('no '+path)
+      # sys.exit()
+      fdict['fsn'] = 0
+      fdict['dsn'] = 0
+    else:
+      ddata = dirDict.pop(path)
+      size = ddata['size']
+      fsn = ddata['fsn']
+      dsn = ddata['dsn']
+      fdict['Size'] = size
+      fdict['fsn'] = fsn
+      fdict['dsn'] = dsn
+      dsn += 1
     # print(f'{dsn}={fsn}={size}={path}')
   else:
     fsn = 1
@@ -87,7 +98,7 @@ if not dirDict:
                                 )
 else:
   print(dirDict)
-  sys.exit()
+  # sys.exit()
 
 #print(jsonRes[0])
 for fdict in jsonRes:
