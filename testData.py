@@ -40,7 +40,7 @@ dirDict = {}
 for fdict in reversed(jsonRes):
   path = '//'+fdict['Path']
   fdict['Path'] = path
-  fdict['gdid'] = fdict.pop('ID')
+  fdict['id'] = fdict.pop('ID')
 
   if fdict.get('Hashes'):
     fdict['md5'] = fdict['Hashes']['MD5']
@@ -53,10 +53,10 @@ for fdict in reversed(jsonRes):
   #   print('=---'+pdir)
   fdict['pdir'] = pdir
 
+  # print(dirDict)
+  # print('-----------')
   if fdict['IsDir']:
     # 测试dirDict 找不到path key 的问题。同一个出问题的目录 2427 个文件时没有问题
-    # print(dirDict.keys())
-    # print('-----------')
     ddata = dirDict.get(path)
     if not ddata:
       # for k in dirDict.keys():
@@ -74,8 +74,8 @@ for fdict in reversed(jsonRes):
       fdict['Size'] = size
       fdict['fsn'] = fsn
       fdict['dsn'] = dsn
+    print(f'{dsn}={fsn}={size}={path}')
     dsn += 1
-    # print(f'{dsn}={fsn}={size}={path}')
   else:
     fsn = 1
     dsn = 0
@@ -89,13 +89,15 @@ for fdict in reversed(jsonRes):
     #print(f'{pdir}--{tt}')
   else:
     dirDict[pdir] = {'size': size}
-    dirDict[pdir]['fsn'] = 1
+    dirDict[pdir]['fsn'] = fsn
     dirDict[pdir]['dsn'] = dsn
     
   # print(fdict)
 rootdir = dirDict.pop('/')
+# print(rootdir)
+# sys.exit()
 if not dirDict:
-  models.gdfiles.objects.create(Path='/', Name='/',
+  models.gdfiles.objects.create(id='01', Path='/', Name='/',
                                 Size=rootdir['size'],
                                 IsDir=True,
                                 fsn=rootdir['fsn'],
