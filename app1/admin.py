@@ -4,7 +4,7 @@ from .utils import hum_convert
 
 
 class gdfilesAdmin(admin.ModelAdmin):
-	list_display = ('id', 'dsn', 'fsn', 'humanSize', 'Path', 'pdir')
+	list_display = ('dsn', 'fsn', 'humanSize', 'Path', 'pdir')
 	search_fields = ['Path']
 	ordering = ('id',)
 
