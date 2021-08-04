@@ -12,6 +12,13 @@ queryIds = set()
 queryFIds = set()
 
 def query(request):
+  if queryIds:
+    queryIds.clear()
+  if queryFIds:
+    queryFIds.clear()
+  # queryIds = set()
+  # queryFIds = set()
+
   # searchKey = request.POST.get("searchKey", '')
   body_unicode = request.body.decode('utf-8')
   body = json.loads(body_unicode)
@@ -36,7 +43,7 @@ def query(request):
     queryIds.add(f.id)
     getPid(f.id, idMap)
 
-  print(queryIds)
+  # print(queryIds)
 
   rootdir = all[0]
   all = all[1:]
@@ -50,7 +57,7 @@ def query(request):
 
   treeData.append(tmpNode)
 
-  print(treeData)
+  # print(treeData)
   
   return JsonResponse(
     {
@@ -86,27 +93,6 @@ def getQueryChildren(pdir, all):
         break
   return children
 
-
-def filter(data):
-  rootdir = data[0]
-  all = data[1:]
-  getFilterChildren(rootdir, all)
-
-
-def getFilterChildren(pdir, all):
-  children = []
-  for f in all:
-    if f.pdir == pdir:
-      tmpNode = {}
-      tmpNode['label'] = f.Name
-      tmpNode['Size'] = hum_convert(f.Size)
-      if f.IsDir:
-        tmpNode['children'] = getChildren(f, all)
-      children.append(tmpNode)
-    else:
-      if children:
-        break
-  return children
 
 def lazyGetChildren(request):
   id = request.GET.get("id")
