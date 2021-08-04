@@ -1,10 +1,112 @@
 from django.http.response import JsonResponse
 from django.shortcuts import render
+import json
+import re
 
 from .models import gdfiles
 from .utils import hum_convert
 
 
+searchKey = ''
+queryIds = set()
+queryFIds = set()
+
+def query(request):
+  # searchKey = request.POST.get("searchKey", '')
+  body_unicode = request.body.decode('utf-8')
+  body = json.loads(body_unicode)
+  searchKey = body['searchKey']
+  print(searchKey)
+  # rest = gdfiles.objects.filter(Name__contains=searchKey)
+  all = gdfiles.objects.all()
+
+  idMap = {}
+  queryRest = []
+  for f in all:
+    idMap[f.id] = f
+    fa = re.findall(searchKey, f.Name)
+    if fa:
+      queryRest.append(f)
+
+  # print(queryRest)
+
+  # queryIds = set()
+  for f in queryRest:
+    queryFIds.add(f.id)
+    queryIds.add(f.id)
+    getPid(f.id, idMap)
+
+  print(queryIds)
+
+  rootdir = all[0]
+  all = all[1:]
+
+  treeData = []
+  tmpNode = {}
+  tmpNode['id'] = rootdir.id
+  tmpNode['label'] = rootdir.Name
+  tmpNode['Size'] = hum_convert(rootdir.Size)
+  tmpNode['children'] = getQueryChildren(rootdir, all)
+
+  treeData.append(tmpNode)
+
+  print(treeData)
+  
+  return JsonResponse(
+    {
+      'treeData': treeData,
+      'expandedKeys': list(queryFIds)
+    },
+    safe=False
+  )
+
+def getPid(id, idMap):
+  f = idMap[id]
+  pdir = f.pdir
+  if pdir:
+    queryIds.add(pdir.id)
+    getPid(pdir.id, idMap)
+
+
+def getQueryChildren(pdir, all):
+  children = []
+  for f in all:
+    if f.pdir == pdir:
+      if f.id not in queryIds:
+        continue
+      tmpNode = {}
+      tmpNode['id'] = f.id
+      tmpNode['label'] = f.Name
+      tmpNode['Size'] = hum_convert(f.Size)
+      if f.IsDir:
+        tmpNode['children'] = getQueryChildren(f, all)
+      children.append(tmpNode)
+    else:
+      if children:
+        break
+  return children
+
+
+def filter(data):
+  rootdir = data[0]
+  all = data[1:]
+  getFilterChildren(rootdir, all)
+
+
+def getFilterChildren(pdir, all):
+  children = []
+  for f in all:
+    if f.pdir == pdir:
+      tmpNode = {}
+      tmpNode['label'] = f.Name
+      tmpNode['Size'] = hum_convert(f.Size)
+      if f.IsDir:
+        tmpNode['children'] = getChildren(f, all)
+      children.append(tmpNode)
+    else:
+      if children:
+        break
+  return children
 
 def lazyGetChildren(request):
   id = request.GET.get("id")
@@ -58,6 +160,7 @@ def getChildren(pdir, all):
   for f in all:
     if f.pdir == pdir:
       tmpNode = {}
+      tmpNode['id'] = f.id
       tmpNode['label'] = f.Name
       tmpNode['Size'] = hum_convert(f.Size)
       if f.IsDir:
@@ -73,6 +176,14 @@ def index(request):
   all = gdfiles.objects.all()
   rootdir = all[0]
   all = all[1:]
-  treeData = getChildren(rootdir, all)
+
+  treeData = []
+  tmpNode = {}
+  tmpNode['id'] = rootdir.id
+  tmpNode['label'] = rootdir.Name
+  tmpNode['Size'] = hum_convert(rootdir.Size)
+  tmpNode['children'] = getChildren(rootdir, all)
+
+  treeData.append(tmpNode)
 
   return JsonResponse(treeData, safe=False)
