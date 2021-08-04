@@ -17,9 +17,9 @@ from app1 import models
 models.gdfiles.objects.all().delete()
 print('数据库清空完成')
 
-#gdName = 't1:entertainment/chinaMovies'
-gdName = 't1:entertainment/综艺'
-# gdName = 't1:'
+# gdName = 't1:entertainment/chinaMovies'
+gdName = 'tmp:entertainment/综艺'
+# gdName = 'tmp:'
 
 if len(sys.argv) > 1:
     # argv 为参数列表
