@@ -35,7 +35,7 @@ def query(request):
     if fa:
       queryRest.append(f)
 
-  # print(queryRest)
+  print(queryRest)
 
   # queryIds = set()
   for f in queryRest:
@@ -43,7 +43,7 @@ def query(request):
     queryIds.add(f.id)
     getPid(f.id, idMap)
 
-  # print(queryIds)
+  print(queryIds)
 
   rootdir = all[0]
   all = all[1:]
@@ -57,7 +57,7 @@ def query(request):
 
   treeData.append(tmpNode)
 
-  # print(treeData)
+  print(treeData)
   
   return JsonResponse(
     {
@@ -168,7 +168,8 @@ def index(request):
   tmpNode['id'] = rootdir.id
   tmpNode['label'] = rootdir.Name
   tmpNode['Size'] = hum_convert(rootdir.Size)
-  tmpNode['children'] = getChildren(rootdir, all)
+  # tmpNode['children'] = getChildren(rootdir, all)
+  tmpNode['children'] = []
 
   treeData.append(tmpNode)
 
