@@ -20,4 +20,7 @@ from app1 import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('gdfs', views.index),
+    path('root', views.lazyIndex),
+    path('getChild', views.lazyGetChildren),
+    # path(r'^getChild/(?P<name>.*)', views.lazyIndex),
 ]
