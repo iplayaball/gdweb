@@ -24,8 +24,12 @@
 			lazy
 			ref="tree">
       <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span style="color:rgb(150, 37, 135);">{{ data.name }}</span>
-      <span style="color: blue;">{{ data.Size }}</span>
+        <span :style="{'color':data.IsDir?'blue':'green'}">{{ data.name }}</span>
+	      <span>
+					<span style="color: DarkRed;">{{ data.Size }}</span>
+		      <span style="color: LimeGreen;">{{ data.fsn }}</span>
+		      <span style="color: DarkBlue;">{{ data.dsn }}</span>
+				</span>
       </span>
     </el-tree>
   </div>
@@ -107,4 +111,14 @@
   });
 </script>
 
+<style>
+  .custom-tree-node {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    padding-right: 8px;
+  }
+</style>
 </html>

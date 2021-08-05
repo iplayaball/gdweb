@@ -12,6 +12,22 @@ queryIds = set()
 queryFIds = set()
 
 
+def convert2dict(f):
+  dict = {}
+  dict['id'] = f.id
+  dict['name'] = f.Name
+  dict['IsDir'] = f.IsDir
+  dict['Size'] = hum_convert(f.Size)
+  # dict['Path'] = f.Path
+  dict['MimeType'] = f.MimeType
+  # dict['ModTime'] = f.ModTime
+  # dict['md5'] = f.md5
+  # dict['pdir'] = f.pdir
+  dict['fsn'] = f.fsn
+  dict['dsn'] = f.dsn
+  return dict
+
+
 def keyFilter(request):
   if queryFIds:
     queryFIds.clear()
@@ -68,10 +84,7 @@ def keyFilter(request):
   #   for r in root.children:
   #     print(r.__dict__)
   for root in roots:
-    dict = {}
-    dict['id'] = root.id
-    dict['name'] = root.Name
-    dict['Size'] = hum_convert(root.Size)
+    dict = convert2dict(root)
     if hasattr(root, 'children'):
       dict['children'] = getChildrenDict(root.children)
     treeData.append(dict)
@@ -87,10 +100,7 @@ def keyFilter(request):
 def getChildrenDict(fc):
   children = []
   for f in fc:
-    dict = {}
-    dict['id'] = f.id
-    dict['name'] = f.Name
-    dict['Size'] = hum_convert(f.Size)
+    dict = convert2dict(f)
     if hasattr(f, 'children'):
       dict['children'] = getChildrenDict(f.children)
     children.append(dict)
@@ -171,7 +181,6 @@ def getPid(id, idMap):
     queryIds.add(pdir.id)
     getPid(pdir.id, idMap)
 
-
 def getQueryChildren(pdir, all):
   children = []
   for f in all:
@@ -199,12 +208,9 @@ def lazyGetChildren(request):
   # print(childrenData)
   children = []
   for f in childrenData:
-    tmpNode = {}
-    tmpNode['name'] = f.Name
-    tmpNode['id'] = f.id
-    tmpNode['leaf'] = not f.IsDir
-    tmpNode['Size'] = hum_convert(f.Size)
-    children.append(tmpNode)
+    dict = convert2dict(f)
+    dict['leaf'] = not f.IsDir
+    children.append(dict)
 
   return JsonResponse(children, safe=False)
 
@@ -214,15 +220,12 @@ def lazyIndex(request):
 
   treeData = []
   for gdRoot in gdRoots:
-    tmpNode = {}
-    tmpNode['id'] = gdRoot.id
-    tmpNode['name'] = gdRoot.Name
-    tmpNode['Size'] = hum_convert(gdRoot.Size)
-    tmpNode['leaf'] = not gdRoot.IsDir
+    dict = convert2dict(gdRoot)
+    dict['leaf'] = not gdRoot.IsDir
     # tmpNode['children'] = getChildren(gdRoot, all)
-    tmpNode['children'] = []
+    dict['children'] = []
 
-    treeData.append(tmpNode)
+    treeData.append(dict)
 
   return JsonResponse(treeData, safe=False)
 
@@ -249,13 +252,10 @@ def index(request):
 
   treeData = []
   for gdRoot in gdRoots:
-    tmpNode = {}
-    tmpNode['id'] = gdRoot.id
-    tmpNode['name'] = gdRoot.Name
-    tmpNode['Size'] = hum_convert(gdRoot.Size)
+    dict = convert2dict(gdRoot)
     # tmpNode['children'] = getChildren(gdRoot, all)
-    tmpNode['children'] = []
-
-    treeData.append(tmpNode)
+    # dict['children'] = []
+    
+    treeData.append(dict)
 
   return JsonResponse(treeData, safe=False)
