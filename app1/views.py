@@ -11,6 +11,79 @@ searchKey = ''
 queryIds = set()
 queryFIds = set()
 
+
+def keyFilter(request):
+  if queryFIds:
+    queryFIds.clear()
+
+  # searchKey = request.POST.get("searchKey", '')
+  body_unicode = request.body.decode('utf-8')
+  body = json.loads(body_unicode)
+  searchKey = body['searchKey']
+  print(searchKey)
+  # rest = gdfiles.objects.filter(Name__contains=searchKey)
+  all = gdfiles.objects.all()
+
+  queryRest = []
+  for f in all:
+    fa = re.findall(searchKey, f.Name)
+    if fa:
+      queryRest.append(f)
+
+  print(queryRest)
+
+  # queryIds = set()
+  restFs = []
+  for f in queryRest:
+    fs = [f]
+    queryFIds.add(f.id)
+    getPids(fs, f)
+    fs.reverse()
+    restFs.append(fs)
+
+  print(restFs)
+  treeData = []
+  for fs in restFs:
+    for i in range (1, len(fs)):
+      pf = fs[i-1]
+      f = fs[i]
+      if hasattr(pf, 'children'):
+        pf.children.append(f)
+      else:
+        pf.children = [f]
+  print(restFs)
+  for fs in restFs:
+    dict = {}
+    roots = json.dumps(fs[0], default=gdfiles.convert2json)
+    roots = json.loads(roots)
+    treeData.append(roots)
+
+  print(treeData)
+
+  return JsonResponse(
+      {
+          'treeData': treeData,
+          'expandedKeys': list(queryFIds)
+      },
+      safe=False
+  )
+
+# def convert2dict(f, dict):
+#   dict['id'] = f.id
+#   dict['name'] = f.Name
+#   dict['Size'] = hum_convert(f.Size)
+#   if hasattr(f, 'children'):
+#     dict['children'] = []
+#     for c in f.children
+#       dict['children'].append()
+
+def getPids(fs, f):
+  pdir = f.pdir
+  if pdir:
+    fs.append(pdir)
+    getPids(fs, pdir)
+
+
 def query(request):
   if queryIds:
     queryIds.clear()

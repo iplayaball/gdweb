@@ -1,5 +1,5 @@
 from django.db import models
-
+from .utils import hum_convert
 
 class gdfiles(models.Model):
   id = models.CharField(max_length=40,primary_key=True)
@@ -19,3 +19,14 @@ class gdfiles(models.Model):
 
   def __str__(self):
     return self.Path
+
+  def convert2json(f):
+    if not hasattr(f, 'children'):
+      f.children = []
+
+    return {
+      'id': f.id,
+      'label': f.Name,
+      'Size': hum_convert(f.Size),
+      'children': f.children
+    }

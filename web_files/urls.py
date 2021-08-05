@@ -22,6 +22,6 @@ urlpatterns = [
     path('gdfs', views.index),
     path('root', views.lazyIndex),
     path('getChild', views.lazyGetChildren),
-    path('query', views.query),
+    path('query', views.keyFilter),
     # path(r'^getChild/(?P<name>.*)', views.lazyIndex),
 ]
