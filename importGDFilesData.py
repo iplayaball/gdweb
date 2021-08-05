@@ -47,7 +47,7 @@ else:
 dirDict = {}
 # 统计目录内的文件数据
 for fdict in reversed(jsonRes):
-    path = '//'+fdict['Path']
+    path = '/aa/'+fdict['Path']
     fdict['Path'] = path
     fdict['id'] = fdict.pop('ID')
 
@@ -102,15 +102,15 @@ for fdict in reversed(jsonRes):
         dirDict[pdir]['dsn'] = dsn
 
     # print(fdict)
-rootdir = dirDict.pop('/')
+rootdir = dirDict.pop('/aa')
 # print(rootdir)
 # sys.exit()
 if dirDict:
     print(dirDict)
     # sys.exit()
 rootdir['id'] = '01'
-rootdir['Path'] = '/'
-rootdir['Name'] = '/'
+rootdir['Path'] = '/aa'
+rootdir['Name'] = '/aa'
 rootdir['IsDir'] = True
 rootdir['MimeType'] = 'gdname'
 rootdir['Size'] = rootdir.pop('size')

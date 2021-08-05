@@ -210,32 +210,21 @@ def lazyGetChildren(request):
 
 
 def lazyIndex(request):
-  all = gdfiles.objects.all()
-  rootdir = all[0]
-  all = all[1:]
-  # print(rootdir.MimeType)
+  gdRoots = gdfiles.objects.filter(MimeType='gdname')
 
-  # treeData = []
-  # tmp = {}
-  # tmp['name'] = rootdir.Name
-  treeData = getChild(rootdir, all)
+  treeData = []
+  for gdRoot in gdRoots:
+    tmpNode = {}
+    tmpNode['id'] = gdRoot.id
+    tmpNode['name'] = gdRoot.Name
+    tmpNode['Size'] = hum_convert(gdRoot.Size)
+    tmpNode['leaf'] = not gdRoot.IsDir
+    # tmpNode['children'] = getChildren(gdRoot, all)
+    tmpNode['children'] = []
+
+    treeData.append(tmpNode)
+
   return JsonResponse(treeData, safe=False)
-
-
-def getChild(pdir, all):
-  children = []
-  for f in all:
-    if f.pdir == pdir:
-      tmpNode = {}
-      tmpNode['name'] = f.Name
-      tmpNode['id'] = f.id
-      tmpNode['leaf'] = not f.IsDir
-      tmpNode['Size'] = hum_convert(f.Size)
-      children.append(tmpNode)
-    else:
-      if children:
-        break
-  return children
 
 
 def getChildren(pdir, all):
@@ -256,18 +245,17 @@ def getChildren(pdir, all):
 
 
 def index(request):
-  all = gdfiles.objects.all()
-  rootdir = all[0]
-  all = all[1:]
+  gdRoots = gdfiles.objects.filter(MimeType = 'gdname')
 
   treeData = []
-  tmpNode = {}
-  tmpNode['id'] = rootdir.id
-  tmpNode['label'] = rootdir.Name
-  tmpNode['Size'] = hum_convert(rootdir.Size)
-  # tmpNode['children'] = getChildren(rootdir, all)
-  tmpNode['children'] = []
+  for gdRoot in gdRoots:
+    tmpNode = {}
+    tmpNode['id'] = gdRoot.id
+    tmpNode['name'] = gdRoot.Name
+    tmpNode['Size'] = hum_convert(gdRoot.Size)
+    # tmpNode['children'] = getChildren(gdRoot, all)
+    tmpNode['children'] = []
 
-  treeData.append(tmpNode)
+    treeData.append(tmpNode)
 
   return JsonResponse(treeData, safe=False)
