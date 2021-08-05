@@ -4,7 +4,7 @@ import django
 import json
 import subprocess
 import re
-import datetime
+from datetime import datetime
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # 定位到你的django根目录
 # print(os.pardir)
@@ -14,12 +14,15 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "web_files.settings")
 django.setup()
 
 from app1 import models
-models.gdfiles.objects.all().delete()
-print('数据库清空完成')
+# models.gdfiles.objects.all().delete()
+# print('数据库清空完成')
+print('开始: ', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
 # gdName = 't1:entertainment/chinaMovies'
-gdName = 'tmp:entertainment/综艺'
-# gdName = 'tmp:'
+# gdName = 't1:entertainment/综艺'
+rootid = 'm4'
+gdN = 'wm4'
+gdName = gdN+':'
 
 if len(sys.argv) > 1:
     # argv 为参数列表
@@ -46,8 +49,10 @@ else:
 
 dirDict = {}
 # 统计目录内的文件数据
+print('开始统计文件数目: ', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+starttime = datetime.now()
 for fdict in reversed(jsonRes):
-    path = '/aa/'+fdict['Path']
+    path = rootid+'/'+fdict['Path']
     fdict['Path'] = path
     fdict['id'] = fdict.pop('ID')
 
@@ -102,15 +107,19 @@ for fdict in reversed(jsonRes):
         dirDict[pdir]['dsn'] = dsn
 
     # print(fdict)
-rootdir = dirDict.pop('/aa')
+
+endtime = datetime.now()
+print('统计文件数目耗时：', (endtime - starttime))
+
+rootdir = dirDict.pop(rootid)
 # print(rootdir)
 # sys.exit()
 if dirDict:
     print(dirDict)
     # sys.exit()
-rootdir['id'] = '01'
-rootdir['Path'] = '/aa'
-rootdir['Name'] = '/aa'
+rootdir['id'] = rootid
+rootdir['Path'] = rootid
+rootdir['Name'] = rootid
 rootdir['IsDir'] = True
 rootdir['MimeType'] = 'gdname'
 rootdir['Size'] = rootdir.pop('size')
@@ -138,12 +147,15 @@ for fdict in jsonRes:
     # print(fdict)
     gdf = models.gdfiles(**fdict)
     objList.append(gdf)
+    # print(gdf.__dict__)
     # gdf.save()
 
+# print(objList[0].__dict__)
 print('开始批量插入数据...')
-starttime = datetime.datetime.now()
+starttime = datetime.now()
 models.gdfiles.objects.bulk_create(objList)
-endtime = datetime.datetime.now()
-print((endtime - starttime))
+endtime = datetime.now()
+print('插入数据耗时：',(endtime - starttime))
+print('结束: ', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 #res = models.gdfiles.objects.all()
 # print(res)
