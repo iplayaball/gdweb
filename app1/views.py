@@ -20,7 +20,7 @@ def keyFilter(request):
   body_unicode = request.body.decode('utf-8')
   body = json.loads(body_unicode)
   searchKey = body['searchKey']
-  print(searchKey)
+  print('searchKey: ', searchKey)
   # rest = gdfiles.objects.filter(Name__contains=searchKey)
   all = gdfiles.objects.all()
 
@@ -30,35 +30,51 @@ def keyFilter(request):
     if fa:
       queryRest.append(f)
 
-  print(queryRest)
-
-  # queryIds = set()
   restFs = []
+  dirs = {}
   for f in queryRest:
     fs = [f]
     queryFIds.add(f.id)
-    getPids(fs, f)
+    if f.IsDir:
+      dirs[f.id] = f
+
+    getPdir(dirs, fs, f)
     fs.reverse()
     restFs.append(fs)
 
-  print(restFs)
+  # print(dirs)
   treeData = []
   for fs in restFs:
     for i in range (1, len(fs)):
       pf = fs[i-1]
       f = fs[i]
       if hasattr(pf, 'children'):
-        pf.children.append(f)
+        # 判断当前 f 是否已经添加过，没添加过才添加
+        notIn = True
+        for c in pf.children:
+          if c == f:
+            notIn = False
+            break
+        if notIn:
+          pf.children.append(f)
       else:
         pf.children = [f]
-  print(restFs)
-  for fs in restFs:
-    dict = {}
-    roots = json.dumps(fs[0], default=gdfiles.convert2json)
-    roots = json.loads(roots)
-    treeData.append(roots)
 
-  print(treeData)
+  roots = set()
+  for fs in restFs:
+    roots.add(fs[0])
+  # for root in roots:
+  #   print(root.__dict__)
+  #   for r in root.children:
+  #     print(r.__dict__)
+  for root in roots:
+    dict = {}
+    dict['id'] = root.id
+    dict['name'] = root.Name
+    dict['Size'] = hum_convert(root.Size)
+    if hasattr(root, 'children'):
+      dict['children'] = getChildrenDict(root.children)
+    treeData.append(dict)
 
   return JsonResponse(
       {
@@ -68,20 +84,28 @@ def keyFilter(request):
       safe=False
   )
 
-# def convert2dict(f, dict):
-#   dict['id'] = f.id
-#   dict['name'] = f.Name
-#   dict['Size'] = hum_convert(f.Size)
-#   if hasattr(f, 'children'):
-#     dict['children'] = []
-#     for c in f.children
-#       dict['children'].append()
+def getChildrenDict(fc):
+  children = []
+  for f in fc:
+    dict = {}
+    dict['id'] = f.id
+    dict['name'] = f.Name
+    dict['Size'] = hum_convert(f.Size)
+    if hasattr(f, 'children'):
+      dict['children'] = getChildrenDict(f.children)
+    children.append(dict)
+  return children
 
-def getPids(fs, f):
+def getPdir(dirs, fs, f):
   pdir = f.pdir
   if pdir:
-    fs.append(pdir)
-    getPids(fs, pdir)
+    dirsPdir = dirs.get(pdir.id)
+    if dirsPdir:
+      fs.append(dirsPdir)
+    else:
+      fs.append(pdir)
+      dirs[pdir.id] = pdir
+    getPdir(dirs, fs, pdir)
 
 
 def query(request):
@@ -131,7 +155,7 @@ def query(request):
   treeData.append(tmpNode)
 
   print(treeData)
-  
+
   return JsonResponse(
     {
       'treeData': treeData,
@@ -171,7 +195,7 @@ def lazyGetChildren(request):
   id = request.GET.get("id")
   # gd = gdfiles.objects.get(id=id)
   childrenData = gdfiles.objects.filter(pdir_id=id)
-  
+
   # print(childrenData)
   children = []
   for f in childrenData:
@@ -181,7 +205,7 @@ def lazyGetChildren(request):
     tmpNode['leaf'] = not f.IsDir
     tmpNode['Size'] = hum_convert(f.Size)
     children.append(tmpNode)
-  
+
   return JsonResponse(children, safe=False)
 
 

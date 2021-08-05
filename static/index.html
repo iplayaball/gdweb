@@ -32,6 +32,7 @@
     <el-tree 
 			class="filter-tree" 
 			:data="treeData"
+			:props="props"
 			:filter-node-method="filterNode"
 			:default-expand-all="expandAll"
 			node-key="id"
@@ -62,6 +63,10 @@
 			},
       filterText: '',
       treeData: [],
+			props: {
+        label: 'name',
+        children: 'children',
+      },
 			expandAll: false,
 			expandedKeys: [],
     },
@@ -106,7 +111,7 @@
       filterNode(value, data) {
         if (!value) return true;
 				console.log('aaaa')
-        return data.label.indexOf(value) !== -1;
+        return data.name.indexOf(value) !== -1;
       }
     }
   });
