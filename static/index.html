@@ -32,6 +32,15 @@
 					 size="small"
 					></el-button>
 			</el-form-item>
+			<el-form-item>
+				<el-switch
+					:width=30
+					v-model="formInline.isRegex"
+					inactive-text="reg"
+					active-color="#ff4949"
+					inactive-color="#13ce66">
+				</el-switch>
+			</el-form-item>
 		</el-form>
 
 		<el-input placeholder="页面过滤" v-model="filterText">
@@ -71,6 +80,7 @@
 		data: {
 			formInline: {
 				searchKey: '',
+				isRegex: false
 			},
 			filterText: '',
 			treeData: [],
@@ -107,6 +117,7 @@
 				console.log('submit!');
 				axios.post('/query', {
 						searchKey: this.formInline.searchKey,
+						isRegex: this.formInline.isRegex
 					})
 					.then(response => {
 						data = response.data
