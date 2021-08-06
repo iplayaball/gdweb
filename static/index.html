@@ -14,15 +14,23 @@
   <div id="mytree">
 		<el-form :inline="true"
 			:model="formInline"
-			class="demo-form-inline">
+			class="demo-form-inline"
+			@submit.native.prevent>
 			<el-form-item>
 		    <el-input
 					v-model="formInline.searchKey"
+					autofocus
 					placeholder="查询关键字"></el-input>
 		  </el-form-item>
 			<el-form-item>
-		    <el-button type="primary" 
-					@click="onSubmit">查询</el-button>
+		    <el-button :type=btnType
+					native-type="submit"
+					@click="onSubmit"
+					:loading=isLoading
+					icon="el-icon-search"
+					circle
+					 size="small"
+					></el-button>
 		  </el-form-item>
 		</el-form>
 
@@ -72,6 +80,8 @@
       },
 			expandAll: false,
 			expandedKeys: [],
+			isLoading: false,
+			btnType: 'primary',
     },
     created() {
 			// this.expandAll = true
@@ -92,6 +102,8 @@
     },
     methods: {
 			onSubmit() {
+				this.isLoading = true
+				this.btnType = 'danger'
         console.log('submit!');
 				axios.post('/query', {
 						searchKey: this.formInline.searchKey,
@@ -103,9 +115,12 @@
 						// this.expandAll = true
 						// this.treeData = []
 						this.treeData = data.treeData
-						
+						this.isLoading = false
+						this.btnType = 'primary'
           }).catch(function (error) {
 			    	console.log(error);
+						this.isLoading = false
+						this.btnType = 'primary'
 			  	});
       },
       handleNodeClick(data) {

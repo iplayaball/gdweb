@@ -39,7 +39,10 @@ def keyFilter(request):
   print('searchKey: ', searchKey)
 
   printTime('数据库查询')
-  queryRest = gdfiles.objects.filter(Name__regex=searchKey)
+  # queryRest = gdfiles.objects.select_related('pdir').filter(Name__regex=searchKey)
+  queryRest = gdfiles.objects.select_related(
+      'pdir').filter(Name__icontains=searchKey)
+  # queryRest = gdfiles.objects.filter(Name__icontains=searchKey)
   
   """ all = gdfiles.objects.all()
   printTime('遍历查找开始')
@@ -51,21 +54,21 @@ def keyFilter(request):
 
   printTime('查找完整的父目录')
   restFs = []
-  dirs = {}
+  # dirs = {}
   pdirs = {}
   for f in queryRest:
     fs = [f]
     queryFIds.add(f.id)
-    if f.IsDir:
-      dirs[f.id] = f
+    # if f.IsDir:
+    #   dirs[f.id] = f
 
-    getPdir(pdirs, dirs, fs, f)
+    getPdir(pdirs, fs, f)
     for i, f in enumerate(fs[:-1]):
       if f.id not in pdirs and f.IsDir:
         pdirs[f.id] = fs[i:]
     fs.reverse()
     restFs.append(fs)
-  print(pdirs)
+  # print(pdirs)
   printTime('封装每个结果的树')
   # print(dirs)
   treeData = []
@@ -117,22 +120,22 @@ def getChildrenDict(fc):
   return children
 
 
-def getPdir(pdirs, dirs, fs, f):
+def getPdir(pdirs, fs, f):
   pdir = f.pdir
   if pdir:
     pdirL = pdirs.get(pdir.id)
     if pdirL:
       fs.extend(pdirL)
       # print(pdirL)
-      return
-    dirsPdir = dirs.get(pdir.id)
-    if dirsPdir:
-      print(dirsPdir)
-      fs.append(dirsPdir)
+      # return
+    # dirsPdir = dirs.get(pdir.id)
+    # if dirsPdir:
+    #   print(dirsPdir)
+    #   fs.append(dirsPdir)
     else:
       fs.append(pdir)
-      dirs[pdir.id] = pdir
-    getPdir(pdirs, dirs, fs, pdir)
+      # dirs[pdir.id] = pdir
+      getPdir(pdirs, fs, pdir)
 
 
 def query(request):
