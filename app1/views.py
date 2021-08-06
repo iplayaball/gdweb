@@ -4,7 +4,7 @@ import json
 import re
 
 from .models import gdfiles
-from .utils import hum_convert
+from .utils import *
 
 
 searchKey = ''
@@ -37,15 +37,19 @@ def keyFilter(request):
   body = json.loads(body_unicode)
   searchKey = body['searchKey']
   print('searchKey: ', searchKey)
-  # rest = gdfiles.objects.filter(Name__contains=searchKey)
-  all = gdfiles.objects.all()
 
+  printTime('数据库查询')
+  queryRest = gdfiles.objects.filter(Name__regex=searchKey)
+  
+  """ all = gdfiles.objects.all()
+  printTime('遍历查找开始')
   queryRest = []
   for f in all:
     fa = re.findall(searchKey, f.Name)
     if fa:
-      queryRest.append(f)
+      queryRest.append(f) """
 
+  printTime('查找完整的父目录')
   restFs = []
   dirs = {}
   for f in queryRest:
@@ -58,6 +62,7 @@ def keyFilter(request):
     fs.reverse()
     restFs.append(fs)
 
+  printTime('封装每个结果的树')
   # print(dirs)
   treeData = []
   for fs in restFs:
@@ -83,6 +88,7 @@ def keyFilter(request):
   #   print(root.__dict__)
   #   for r in root.children:
   #     print(r.__dict__)
+  printTime('树合并')
   for root in roots:
     dict = convert2dict(root)
     if hasattr(root, 'children'):
