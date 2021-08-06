@@ -26,7 +26,7 @@
 					placeholder="查询关键字"></el-input>
 			</el-form-item>
 			</el-col>
-			<el-col :span="15">
+			<el-col :span="13">
 				<el-form-item>
 					<el-button :type=btnType
 						native-type="submit"
@@ -93,6 +93,10 @@
 			</el-col>
 
 			<el-col :span="2">
+				<a href="/static/lazy.html">lazy</a>
+			</el-col>
+
+			<el-col :span="2">
 				<span style="color: red;">{{restNum.fn}}</span>
 			</el-col>
 			<el-col :span="1">
@@ -101,8 +105,15 @@
 			</el-row>
 		</el-form>
 
-		<el-input placeholder="页面过滤" v-model="filterText">
-		</el-input>
+		
+		<el-row type="flex" class="row-bg" justify="space-between">
+		  <el-col :span="6">
+			<el-input placeholder="页面过滤" v-model="filterText">
+			</el-input>
+			</el-col>
+			<el-col :span="6">
+			</el-col>
+		</el-row>
 
 		<el-tree 
 			class="filter-tree" 

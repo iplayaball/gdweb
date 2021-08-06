@@ -13,8 +13,15 @@
 <body>
 
 	<div id="mytree">
-		<el-input placeholder="输入关键字进行过滤" v-model="filterText">
-		</el-input>
+		<el-row type="flex" class="row-bg" justify="space-between">
+		  <el-col :span="6">
+			<el-input placeholder="页面过滤" v-model="filterText">
+			</el-input>
+			</el-col>
+			<el-col :span="5">
+				<a href="/static/index.html">index</a>
+			</el-col>
+		</el-row>
 
 		<el-tree 
 			class="filter-tree" 
