@@ -27,25 +27,68 @@
 			</el-form-item>
 			</el-col>
 			<el-col :span="15">
-			<el-form-item>
-				<el-button :type=btnType
-					native-type="submit"
-					@click="onSubmit"
-					:loading=isLoading
-					icon="el-icon-search"
-					circle
-					 size="small"
-					></el-button>
-			</el-form-item>
-			<el-form-item>
+				<el-form-item>
+					<el-button :type=btnType
+						native-type="submit"
+						@click="onSubmit"
+						:loading=isLoading
+						icon="el-icon-search"
+						circle
+						 size="small"
+						></el-button>
+				</el-form-item>
+				<el-form-item>
+					<el-switch
+						:width=30
+						v-model="formInline.isRegex"
+						inactive-text="R"
+						active-color="#ff4949"
+						inactive-color="#13ce66">
+					</el-switch>
+				</el-form-item>
+				<el-form-item>
+					<el-switch
+							:width=30
+							v-model="formInline.isDir"
+							inactive-text="D"
+							active-color="#ff4949"
+							inactive-color="#13ce66">
+						</el-switch>
+				</el-form-item>
+				<el-form-item>
 				<el-switch
-					:width=30
-					v-model="formInline.isRegex"
-					inactive-text="reg"
-					active-color="#ff4949"
-					inactive-color="#13ce66">
-				</el-switch>
-			</el-form-item></el-col>
+						:width=30
+						v-model="formInline.isFile"
+						inactive-text="F"
+						active-color="#ff4949"
+						inactive-color="#13ce66">
+					</el-switch>
+				</el-form-item>
+				<el-form-item>
+				<el-select 
+					size='mini' 
+					style="width: 90px"
+					clearable 
+					v-model="sizeType" placeholder="">
+			    <el-option
+			      v-for="item in sizeOp"
+			      :key="item.value"
+			      :label="item.label"
+			      :value="item.value">
+			    </el-option>
+  			</el-select>
+				</el-form-item>
+				<el-form-item>
+					<el-slider v-if="sizeType==1"
+						style="margin-left:10px; width: 100px" 
+						:max=20
+						v-model="sizeMax"></el-slider>
+    			<el-slider v-if="sizeType==2" 
+						style="margin-left:10px; width: 100px" 
+						:max=20
+						v-model="sizeMin"></el-slider>
+				</el-form-item>
+			</el-col>
 
 			<el-col :span="2">
 				<span style="color: red;">{{restNum.fn}}</span>
@@ -93,7 +136,9 @@
 		data: {
 			formInline: {
 				searchKey: '',
-				isRegex: false
+				isRegex: false,
+				isDir: false,
+				isFile: false
 			},
 			filterText: '',
 			treeData: [],
@@ -105,7 +150,20 @@
 			expandedKeys: [],
 			isLoading: false,
 			btnType: 'primary',
-			restNum: {}
+			restNum: {},
+			sizeOp: [{
+				value: 1,
+				label: '最大值'
+			}, {
+				value: 2,
+				label: '最小值'
+			}, {
+				value: 3,
+				label: '范围'
+			}],
+			sizeType: '',
+			sizeMin: 1,
+			sizeMax: 5,
 		},
 		created() {
 			// this.expandAll = true
