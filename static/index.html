@@ -13,7 +13,7 @@
 <body>
 	<div id="mytree">
 		<el-form :inline="true"
-			:model="formInline"
+			:model="filterF"
 			class="demo-form-inline"
 			@submit.native.prevent>
 			<el-row :gutter="20">
@@ -21,7 +21,7 @@
 			<el-form-item>
 				<el-input
 					id='searchInput'
-					v-model="formInline.searchKey"
+					v-model="filterF.searchKey"
 					autofocus
 					placeholder="查询关键字"></el-input>
 			</el-form-item>
@@ -40,36 +40,38 @@
 				<el-form-item>
 					<el-switch
 						:width=30
-						v-model="formInline.isRegex"
+						v-model="filterF.isRegex"
 						inactive-text="R"
 						active-color="#ff4949"
 						inactive-color="#13ce66">
 					</el-switch>
 				</el-form-item>
+
 				<el-form-item>
 					<el-switch
-							:width=30
-							v-model="formInline.isDir"
-							inactive-text="D"
-							active-color="#ff4949"
-							inactive-color="#13ce66">
-						</el-switch>
-				</el-form-item>
-				<el-form-item>
-				<el-switch
 						:width=30
-						v-model="formInline.isFile"
+						v-model="filterF.isFile"
 						inactive-text="F"
 						active-color="#ff4949"
 						inactive-color="#13ce66">
 					</el-switch>
 				</el-form-item>
 				<el-form-item>
+					<el-switch
+						:width=30
+						v-model="filterF.isDir"
+						inactive-text="D"
+						active-color="#ff4949"
+						inactive-color="#13ce66">
+					</el-switch>
+				</el-form-item>
+				
+				<el-form-item>
 				<el-select 
 					size='mini' 
 					style="width: 90px"
 					clearable 
-					v-model="sizeType" placeholder="">
+					v-model="filterF.sizeType" placeholder="">
 			    <el-option
 			      v-for="item in sizeOp"
 			      :key="item.value"
@@ -79,14 +81,14 @@
   			</el-select>
 				</el-form-item>
 				<el-form-item>
-					<el-slider v-if="sizeType==1"
+					<el-slider v-if="filterF.sizeType==1"
 						style="margin-left:10px; width: 100px" 
 						:max=20
-						v-model="sizeMax"></el-slider>
-    			<el-slider v-if="sizeType==2" 
+						v-model="filterF.sizeMax"></el-slider>
+    			<el-slider v-if="filterF.sizeType==2" 
 						style="margin-left:10px; width: 100px" 
 						:max=20
-						v-model="sizeMin"></el-slider>
+						v-model="filterF.sizeMin"></el-slider>
 				</el-form-item>
 			</el-col>
 
@@ -134,11 +136,14 @@
 	new Vue({
 		el: '#mytree',
 		data: {
-			formInline: {
+			filterF: {
 				searchKey: '',
 				isRegex: false,
 				isDir: false,
-				isFile: false
+				isFile: false,
+				sizeType: '',
+				sizeMin: 1,
+				sizeMax: 5,
 			},
 			filterText: '',
 			treeData: [],
@@ -161,9 +166,6 @@
 				value: 3,
 				label: '范围'
 			}],
-			sizeType: '',
-			sizeMin: 1,
-			sizeMax: 5,
 		},
 		created() {
 			// this.expandAll = true
@@ -186,9 +188,23 @@
 				this.isLoading = true
 				this.btnType = 'danger'
 				console.log('submit!');
+				let {
+						searchKey,
+						isRegex,
+						isFile,
+						isDir,
+						sizeType,
+						sizeMax,
+						sizeMin,
+					} = this.filterF
 				axios.post('/query', {
-						searchKey: this.formInline.searchKey,
-						isRegex: this.formInline.isRegex
+						searchKey,
+						isRegex,
+						isFile,
+						isDir,
+						sizeType,
+						sizeMax,
+						sizeMin,
 					})
 					.then(response => {
 						data = response.data
