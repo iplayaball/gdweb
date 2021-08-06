@@ -2,37 +2,37 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <!-- import CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<!-- import CSS -->
+	<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 </head>
 
 <body>
 
-  <div id="mytree">
-    <el-input placeholder="输入关键字进行过滤" v-model="filterText">
-    </el-input>
+	<div id="mytree">
+		<el-input placeholder="输入关键字进行过滤" v-model="filterText">
+		</el-input>
 
-    <el-tree 
+		<el-tree 
 			class="filter-tree" 
 			:props="props"
 			:load="loadNode"
 			:filter-node-method="filterNode"
 			lazy
 			ref="tree">
-      <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span :style="{'color':data.IsDir?'blue':'green'}">{{ data.name }}</span>
-	      <span>
+			<span class="custom-tree-node" slot-scope="{ node, data }">
+				<span :style="{'color':data.IsDir?'blue':'green'}">{{ data.name }}</span>
+				<span>
 					<span style="color: DarkRed;">{{ data.Size }}</span>
-		      <span style="color: LimeGreen;">{{ data.fsn }}</span>
-		      <span style="color: blue;">{{ data.dsn }}</span>
+					<span style="color: LimeGreen;">{{ data.fsn }}</span>
+					<span style="color: blue;">{{ data.dsn }}</span>
 				</span>
-      </span>
-    </el-tree>
-  </div>
+			</span>
+		</el-tree>
+	</div>
 
 </body>
 
@@ -44,81 +44,81 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 <script>
-  new Vue({
-    el: '#mytree',
-    data: {
-      filterText: '',
-      treeData: [],
+	new Vue({
+		el: '#mytree',
+		data: {
+			filterText: '',
+			treeData: [],
 			props: {
-        label: 'name',
-        children: 'zones',
-        isLeaf: 'leaf'
-      },
-    },
-    created() {
-      /*axios.get('/root')
-        .then((response) => {
-          // this.treeData = response.data;
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });*/
-    },
-    watch: {
-      filterText(val) {
-        this.$refs.tree.filter(val);
-      }
-    },
-    methods: {
+				label: 'name',
+				children: 'zones',
+				isLeaf: 'leaf'
+			},
+		},
+		created() {
+			/*axios.get('/root')
+				.then((response) => {
+					// this.treeData = response.data;
+					console.log(response.data);
+				})
+				.catch((error) => {
+					console.log(error);
+				});*/
+		},
+		watch: {
+			filterText(val) {
+				this.$refs.tree.filter(val);
+			}
+		},
+		methods: {
 			loadNode(node, resolve) {
-        if (node.level === 0) {
+				if (node.level === 0) {
 					axios.get('/root')
-		        .then((response) => {
-		          // this.treeData = response.data;
-		          // console.log(response.data);
+						.then((response) => {
+							// this.treeData = response.data;
+							// console.log(response.data);
 							return resolve(response.data);
-		        });
+						});
 					return resolve([]);
-        }
+				}
 				
-        //if (node.level > 1) return resolve([]);
+				//if (node.level > 1) return resolve([]);
 				console.log(node);
 				axios({
-            url: '/getChild',
-            params: {
-                id: node.data.id
-            }
-          })
-          .then(response => {
-            console.log('/getChild', response.data)
+						url: '/getChild',
+						params: {
+								id: node.data.id
+						}
+					})
+					.then(response => {
+						console.log('/getChild', response.data)
 						data = response.data
 						return resolve(data);
-          }, error => {
-              console.log('错误', error.message)
-        })
-      },
+					}, error => {
+							console.log('错误', error.message)
+				})
+			},
 			
-      handleNodeClick(data) {
-        console.log(data);
-      },
-      filterNode(value, data) {
-        if (!value) return true;
+			handleNodeClick(data) {
+				console.log(data);
+			},
+			filterNode(value, data) {
+				if (!value) return true;
 				console.log('aaaa')
-        return data.name.indexOf(value) !== -1;
-      }
-    }
-  });
+				return data.name.indexOf(value) !== -1;
+			}
+		}
+	});
 </script>
 
 <style>
-  .custom-tree-node {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding-right: 8px;
-  }
+	.custom-tree-node {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-size: 14px;
+		padding-right: 8px;
+	}
 </style>
 </html>

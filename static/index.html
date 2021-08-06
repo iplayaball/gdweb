@@ -2,28 +2,28 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <!-- import CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<!-- import CSS -->
+	<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 </head>
 
 <body>
-  <div id="mytree">
+	<div id="mytree">
 		<el-form :inline="true"
 			:model="formInline"
 			class="demo-form-inline"
 			@submit.native.prevent>
 			<el-form-item>
-		    <el-input
+				<el-input
 					v-model="formInline.searchKey"
 					autofocus
 					placeholder="查询关键字"></el-input>
-		  </el-form-item>
+			</el-form-item>
 			<el-form-item>
-		    <el-button :type=btnType
+				<el-button :type=btnType
 					native-type="submit"
 					@click="onSubmit"
 					:loading=isLoading
@@ -31,13 +31,13 @@
 					circle
 					 size="small"
 					></el-button>
-		  </el-form-item>
+			</el-form-item>
 		</el-form>
 
-    <el-input placeholder="页面过滤" v-model="filterText">
-    </el-input>
+		<el-input placeholder="页面过滤" v-model="filterText">
+		</el-input>
 
-    <el-tree 
+		<el-tree 
 			class="filter-tree" 
 			:data="treeData"
 			:props="props"
@@ -46,15 +46,15 @@
 			node-key="id"
 			:default-expanded-keys="expandedKeys"
 			ref="tree">
-      <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span :style="{'color':data.IsDir?'blue':'green'}">{{ data.name }}</span>
-	      <span>
+			<span class="custom-tree-node" slot-scope="{ node, data }">
+				<span :style="{'color':data.IsDir?'blue':'green'}">{{ data.name }}</span>
+				<span>
 					<span style="color: DarkRed;">{{ data.Size }}</span>
-		      <span style="color: LimeGreen;">{{ data.fsn }}</span>
-		      <span style="color: blue;">{{ data.dsn }}</span>
-      </span>
-    </el-tree>
-  </div>
+					<span style="color: LimeGreen;">{{ data.fsn }}</span>
+					<span style="color: blue;">{{ data.dsn }}</span>
+			</span>
+		</el-tree>
+	</div>
 
 </body>
 
@@ -66,83 +66,83 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 <script>
-  new Vue({
-    el: '#mytree',
-    data: {
+	new Vue({
+		el: '#mytree',
+		data: {
 			formInline: {
 				searchKey: '',
 			},
-      filterText: '',
-      treeData: [],
+			filterText: '',
+			treeData: [],
 			props: {
-        label: 'name',
-        children: 'children',
-      },
+				label: 'name',
+				children: 'children',
+			},
 			expandAll: false,
 			expandedKeys: [],
 			isLoading: false,
 			btnType: 'primary',
-    },
-    created() {
+		},
+		created() {
 			// this.expandAll = true
 			// this.expandedKeys = ['1psx7Qr9ahCgX6KUJwLJu2k07dqOnONc2']
-      axios.get('/gdfs')
-        .then((response) => {
-          this.treeData = response.data;
-          //console.log(response.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-    watch: {
-      filterText(val) {
-        this.$refs.tree.filter(val);
-      }
-    },
-    methods: {
+			axios.get('/gdfs')
+				.then((response) => {
+					this.treeData = response.data;
+					//console.log(response.data);
+				})
+				.catch((error) => {
+					console.log(error);
+				});
+		},
+		watch: {
+			filterText(val) {
+				this.$refs.tree.filter(val);
+			}
+		},
+		methods: {
 			onSubmit() {
 				this.isLoading = true
 				this.btnType = 'danger'
-        console.log('submit!');
+				console.log('submit!');
 				axios.post('/query', {
 						searchKey: this.formInline.searchKey,
-          })
-          .then(response => {
+					})
+					.then(response => {
 						data = response.data
-            console.log('/query', data)
+						console.log('/query', data)
 						this.expandedKeys = data.expandedKeys
 						// this.expandAll = true
 						// this.treeData = []
 						this.treeData = data.treeData
 						this.isLoading = false
 						this.btnType = 'primary'
-          }).catch(function (error) {
-			    	console.log(error);
+					}).catch(function (error) {
+						console.log(error);
 						this.isLoading = false
 						this.btnType = 'primary'
-			  	});
-      },
-      handleNodeClick(data) {
-        console.log(data);
-      },
-      filterNode(value, data) {
-        if (!value) return true;
+					});
+			},
+			handleNodeClick(data) {
+				console.log(data);
+			},
+			filterNode(value, data) {
+				if (!value) return true;
 				console.log('aaaa')
-        return data.name.indexOf(value) !== -1;
-      }
-    }
-  });
+				return data.name.indexOf(value) !== -1;
+			}
+		}
+	});
 </script>
 
 <style>
-  .custom-tree-node {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    padding-right: 8px;
-  }
+	.custom-tree-node {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		font-size: 14px;
+		padding-right: 8px;
+	}
 </style>
 </html>
