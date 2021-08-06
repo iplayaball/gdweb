@@ -58,13 +58,16 @@ def keyFilter(request):
 
   printTime('查找完整的父目录')
   restFs = []
-  # dirs = {}
   pdirs = {}
+  num = {'fn':0, 'dn':0}
+  # restCount = queryRest.count()
   for f in queryRest:
     fs = [f]
     queryFIds.add(f.id)
-    # if f.IsDir:
-    #   dirs[f.id] = f
+    if f.IsDir:
+      num['dn'] += 1
+    else:
+      num['fn'] += 1
 
     getPdir(pdirs, fs, f)
     for i, f in enumerate(fs[:-1]):
@@ -74,7 +77,6 @@ def keyFilter(request):
     restFs.append(fs)
   # print(pdirs)
   printTime('封装每个结果的树')
-  # print(dirs)
   treeData = []
   for fs in restFs:
     for i in range (1, len(fs)):
@@ -109,7 +111,8 @@ def keyFilter(request):
   return JsonResponse(
       {
           'treeData': treeData,
-          'expandedKeys': list(queryFIds)
+          'expandedKeys': list(queryFIds),
+          'num': num
       },
       safe=False
   )
@@ -130,15 +133,8 @@ def getPdir(pdirs, fs, f):
     pdirL = pdirs.get(pdir.id)
     if pdirL:
       fs.extend(pdirL)
-      # print(pdirL)
-      # return
-    # dirsPdir = dirs.get(pdir.id)
-    # if dirsPdir:
-    #   print(dirsPdir)
-    #   fs.append(dirsPdir)
     else:
       fs.append(pdir)
-      # dirs[pdir.id] = pdir
       getPdir(pdirs, fs, pdir)
 
 

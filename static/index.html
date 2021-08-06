@@ -16,12 +16,16 @@
 			:model="formInline"
 			class="demo-form-inline"
 			@submit.native.prevent>
+			<el-row :gutter="20">
+			<el-col :span="6">
 			<el-form-item>
 				<el-input
 					v-model="formInline.searchKey"
 					autofocus
 					placeholder="查询关键字"></el-input>
 			</el-form-item>
+			</el-col>
+			<el-col :span="15">
 			<el-form-item>
 				<el-button :type=btnType
 					native-type="submit"
@@ -40,7 +44,15 @@
 					active-color="#ff4949"
 					inactive-color="#13ce66">
 				</el-switch>
-			</el-form-item>
+			</el-form-item></el-col>
+
+			<el-col :span="2">
+				<span style="color: red;">{{restNum.fn}}</span>
+			</el-col>
+			<el-col :span="1">
+				<span style="color: blue;">{{restNum.dn}}</span>
+			</el-col>
+			</el-row>
 		</el-form>
 
 		<el-input placeholder="页面过滤" v-model="filterText">
@@ -92,6 +104,7 @@
 			expandedKeys: [],
 			isLoading: false,
 			btnType: 'primary',
+			restNum: {}
 		},
 		created() {
 			// this.expandAll = true
@@ -126,6 +139,7 @@
 						// this.expandAll = true
 						// this.treeData = []
 						this.treeData = data.treeData
+						this.restNum = data.num
 						this.isLoading = false
 						this.btnType = 'primary'
 					}).catch(function (error) {
@@ -139,7 +153,6 @@
 			},
 			filterNode(value, data) {
 				if (!value) return true;
-				console.log('aaaa')
 				return data.name.indexOf(value) !== -1;
 			}
 		}
