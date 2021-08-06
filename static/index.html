@@ -20,6 +20,7 @@
 			<el-col :span="6">
 			<el-form-item>
 				<el-input
+					id='searchInput'
 					v-model="formInline.searchKey"
 					autofocus
 					placeholder="查询关键字"></el-input>
@@ -108,7 +109,6 @@
 		},
 		created() {
 			// this.expandAll = true
-			// this.expandedKeys = ['1psx7Qr9ahCgX6KUJwLJu2k07dqOnONc2']
 			axios.get('/gdfs')
 				.then((response) => {
 					this.treeData = response.data;
@@ -157,6 +157,22 @@
 			}
 		}
 	});
+
+	document.onkeyup = function (event) {
+		var e = event || window.event || arguments.callee.caller.arguments[0];
+		if (e && e.keyCode == 191) {
+			//console.log(1111)
+			let iputId = "searchInput"
+			if (document.activeElement.id == iputId){
+				//console.log(document.getElementById(iputId).value);
+				document.getElementById(iputId).value = "";
+				return;
+			}
+			document.getElementById(iputId).focus()
+			document.getElementById(iputId).select();
+			//alert('/');
+		}
+	};
 </script>
 
 <style>
