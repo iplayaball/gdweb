@@ -35,19 +35,20 @@ def keyFilter(request):
   # searchKey = request.POST.get("searchKey", '')
   body_unicode = request.body.decode('utf-8')
   body = json.loads(body_unicode)
-  searchKey = body['searchKey']
-  isRegex = body['isRegex']
+  searchKey,isRegex,isFile,isDir,fileType,sizeType,sizeMax,sizeMin = body.values()
   print('searchKey: ', searchKey)
   print('isRegex: ', isRegex)
+  print('body: ', body)
 
   printTime('数据库查询')
+  queryCondition = {}
   if isRegex:
-    queryRest = gdfiles.objects.select_related('pdir').filter(Name__regex=searchKey)
+    queryCondition['Name__regex'] = searchKey
   else:
-    queryRest = gdfiles.objects.select_related(
-      'pdir').filter(Name__icontains=searchKey)
-  # queryRest = gdfiles.objects.filter(Name__icontains=searchKey)
+    queryCondition['Name__icontains'] = searchKey
   
+  queryRest = gdfiles.objects.select_related('pdir').filter(**queryCondition)
+
   """ all = gdfiles.objects.all()
   printTime('遍历查找开始')
   queryRest = []

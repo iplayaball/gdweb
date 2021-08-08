@@ -69,9 +69,24 @@
 				<el-form-item>
 				<el-select 
 					size='mini' 
+					style="width: 72px"
+					clearable 
+					v-model="filterF.fileType" placeholder="FT">
+			    <el-option
+			      v-for="item in fileTypeOp"
+			      :key="item.value"
+			      :label="item.label"
+			      :value="item.value">
+			    </el-option>
+  			</el-select>
+				</el-form-item>
+
+				<el-form-item>
+				<el-select 
+					size='mini' 
 					style="width: 90px"
 					clearable 
-					v-model="filterF.sizeType" placeholder="">
+					v-model="filterF.sizeType" placeholder="   ST">
 			    <el-option
 			      v-for="item in sizeOp"
 			      :key="item.value"
@@ -152,6 +167,7 @@
 				isRegex: false,
 				isDir: false,
 				isFile: false,
+				fileType: '',
 				sizeType: '',
 				sizeMin: 1,
 				sizeMax: 5,
@@ -167,6 +183,19 @@
 			isLoading: false,
 			btnType: 'primary',
 			restNum: {},
+			fileTypeOp: [{
+				value: 'video',
+				label: '视频'
+			}, {
+				value: 'doc',
+				label: '文档'
+			}, {
+				value: 'audio',
+				label: '音频'
+			}, {
+				value: 'other',
+				label: '其它'
+			}],
 			sizeOp: [{
 				value: 1,
 				label: '最大值'
@@ -204,6 +233,7 @@
 						isRegex,
 						isFile,
 						isDir,
+						fileType,
 						sizeType,
 						sizeMax,
 						sizeMin,
@@ -213,6 +243,7 @@
 						isRegex,
 						isFile,
 						isDir,
+						fileType,
 						sizeType,
 						sizeMax,
 						sizeMin,
