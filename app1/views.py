@@ -35,10 +35,9 @@ def keyFilter(request):
 	# searchKey = request.POST.get("searchKey", '')
 	body_unicode = request.body.decode('utf-8')
 	body = json.loads(body_unicode)
+	print(json.dumps(body, ensure_ascii=False, sort_keys=True, indent=4, separators=(',', ': ')))
+	
 	searchKey,isRegex,isFile,isDir,fileType,sizeType,sizeMax,sizeMin = body.values()
-	print('searchKey: ', searchKey)
-	print('isRegex: ', isRegex)
-	print('body: ', body)
 
 	printTime('数据库查询')
 	queryCondition = {}
@@ -46,6 +45,18 @@ def keyFilter(request):
 		queryCondition['Name__regex'] = searchKey
 	else:
 		queryCondition['Name__icontains'] = searchKey
+	if isFile:
+		queryCondition['IsDir'] = False
+	if isDir:
+		queryCondition['IsDir'] = True
+	if fileType:
+		queryCondition['MimeType__startswith'] = fileType
+	if sizeType == 1:
+		queryCondition['Size__lte'] = sizeMax * 1024**3
+	elif sizeType == 2:
+		queryCondition['Size__gte'] = sizeMin * 1024**3
+	elif sizeType == 3:
+		queryCondition['Size__range']=(sizeMin * 1024**3,sizeMax * 1024**3)
 	
 	queryRest = gdfiles.objects.select_related('pdir').filter(**queryCondition)
 

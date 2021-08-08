@@ -104,6 +104,12 @@
 						style="margin-left:10px; width: 100px" 
 						:max=20
 						v-model="filterF.sizeMin"></el-slider>
+
+					<el-slider v-if="filterF.sizeType==3" 
+						style="margin-left:10px; width: 100px" 
+						:max=20
+						range
+						v-model="filterF.sizeRange"></el-slider>
 				</el-form-item>
 			</el-col>
 
@@ -119,16 +125,6 @@
 			</el-col>
 			</el-row>
 		</el-form>
-
-		
-		<el-row type="flex" class="row-bg" justify="space-between">
-		  <el-col :span="6">
-			<el-input placeholder="页面过滤" v-model="filterText">
-			</el-input>
-			</el-col>
-			<el-col :span="6">
-			</el-col>
-		</el-row>
 
 		<el-tree 
 			class="filter-tree" 
@@ -147,6 +143,16 @@
 					<span style="color: blue;">{{ data.dsn }}</span>
 			</span>
 		</el-tree>
+
+		
+		<el-row type="flex" class="row-bg" justify="space-between">
+		  <el-col :span="6">
+			<el-input placeholder="页面过滤" v-model="filterText">
+			</el-input>
+			</el-col>
+			<el-col :span="6">
+			</el-col>
+		</el-row>
 	</div>
 
 </body>
@@ -171,6 +177,7 @@
 				sizeType: '',
 				sizeMin: 1,
 				sizeMax: 5,
+				sizeRange: [1, 5],
 			},
 			filterText: '',
 			treeData: [],
@@ -184,17 +191,20 @@
 			btnType: 'primary',
 			restNum: {},
 			fileTypeOp: [{
-				value: 'video',
+				value: 'video/',
 				label: '视频'
 			}, {
-				value: 'doc',
-				label: '文档'
+				value: 'text/',
+				label: '文本'
+			},{
+				value: 'image/',
+				label: '图片'
 			}, {
-				value: 'audio',
+				value: 'audio/',
 				label: '音频'
 			}, {
-				value: 'other',
-				label: '其它'
+				value: 'application/',
+				label: '应用'
 			}],
 			sizeOp: [{
 				value: 1,
@@ -228,25 +238,29 @@
 				this.isLoading = true
 				this.btnType = 'danger'
 				console.log('submit!');
+				if (this.filterF.sizeType == 3){
+					this.filterF.sizeMin = this.filterF.sizeRange[0]
+					this.filterF.sizeMax = this.filterF.sizeRange[1]
+				}
 				let {
-						searchKey,
-						isRegex,
-						isFile,
-						isDir,
-						fileType,
-						sizeType,
-						sizeMax,
-						sizeMin,
+					searchKey,
+					isRegex,
+					isFile,
+					isDir,
+					fileType,
+					sizeType,
+					sizeMax,
+					sizeMin,
 					} = this.filterF
 				axios.post('/query', {
-						searchKey,
-						isRegex,
-						isFile,
-						isDir,
-						fileType,
-						sizeType,
-						sizeMax,
-						sizeMin,
+					searchKey,
+					isRegex,
+					isFile,
+					isDir,
+					fileType,
+					sizeType,
+					sizeMax,
+					sizeMin,
 					})
 					.then(response => {
 						data = response.data

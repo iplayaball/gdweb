@@ -17,9 +17,10 @@ def printTime(str):
 
 
 if "__main__" == __name__:
-  # print(hum_convert(10))
+	print(hum_convert(1728777876))
+	print(1728777876/1024**3)
   # print(hum_convert(10000))
   # print(hum_convert(100000000))
   # print(hum_convert(100000000000))
   # print(hum_convert(1000000000000000))
-  printTime('aaa')
+  # printTime('aaa')
