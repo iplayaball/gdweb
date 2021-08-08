@@ -10,7 +10,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # 定位到你的django�
 # print(os.pardir)
 sys.path.append(os.path.abspath(os.path.join(BASE_DIR, os.pardir)))
 # 行是必须的
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "web_files.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "gdweb.settings")
 django.setup()
 
 from app1 import models
