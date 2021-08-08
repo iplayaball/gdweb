@@ -136,7 +136,9 @@
 			:default-expanded-keys="expandedKeys"
 			ref="tree">
 			<span class="custom-tree-node" slot-scope="{ node, data }">
-				<span :style="{'color':data.IsDir?'blue':'green'}">{{ data.name }}</span>
+				<span :style="{'color':data.IsDir?'blue':'green'}">
+					<span v-html="data.name"></span>
+				</span>
 				<span>
 					<span style="color: DarkRed;">{{ data.Size }}</span>
 					<span style="color: LimeGreen;">{{ data.fsn }}</span>

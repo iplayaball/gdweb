@@ -74,6 +74,21 @@ def keyFilter(request):
 	num = {'fn':0, 'dn':0}
 	# restCount = queryRest.count()
 	for f in queryRest:
+		if searchKey:
+			res = re.findall(searchKey, f.Name)
+			# print(res)
+			ll = re.split(searchKey, f.Name)
+			#print(ll)
+			redName = ''
+			for index, item in enumerate(ll):
+				if index == len(ll)-1:
+					# print(item+'\n')
+					redName += item
+				else:
+					redName += item + '<span style="color:red;">'+res[index]+'</span>'
+					# print('red', res[index], 'red')
+			# print(redName)
+			f.Name = redName
 		fs = [f]
 		queryFIds.add(f.id)
 		if f.IsDir:
